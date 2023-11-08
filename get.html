@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>트윗 리스트</title>
+</head>
+<body>
+    <h2>트윗 리스트</h2>
+    <div id="container"></div>
+
+    <script>
+        const userInfo = localStorage.getItem('userInfo') 
+        let token = ''
+        if(userInfo){
+            const userData = JSON.parse(userInfo)
+            token = userData.token
+            console.log(userData)
+        }else{
+            console.log('로그인 후 사용 바랍니다');
+        }
+        fetch('http://localhost:8080/tweets',{
+            method : 'GET',
+            headers: {
+                'Authorization' : `Bearer ${token}`
+            }
+        })
+        .then((res) => {
+            return res.json()})
+        .then(data => {
+            let div;
+            const container = document.getElementById('container');
+            for(const key in data){
+                console.log(data);
+                div = document.createElement('div')
+                div.innerHTML = `${key}: ${data[key].id} / ${data[key].text} / (${data[key].username})`;
+                container.appendChild(div)
+
+                const delButton = document.createElement('button');
+                delButton.textContent = '삭제';
+                delButton.addEventListener('click', () => {
+                    // alert(`${data[key].id}`);
+                    deleteData(`${data[key].id}`)
+                })
+                div.appendChild(delButton);
+            }
+        })
+
+        function deleteData(index){
+            // console.log(token);
+            fetch('http://localhost:8080/tweets/' + index,{
+            method : 'DELETE',
+            headers: {
+                'Authorization' : `Bearer ${token}`
+            }
+        });
+        location.reload();
+            }
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+</head>
+<body>
+    <h2>로그인</h2>
+    <form id="login" name="login">
+        <p>아이디: <input type="text" id="username" name="username"></p>
+        <p>비밀번호: <input type="password" id="password" name="password"></p>
+        <p><button type="submit">로그인</button></p>
+    </form>
+    <script>
+        const form = document.getElementById('login')
+        form.addEventListener('submit', (e) => { // submit됐을때 실행
+            e.preventDefault() //기존 액션 막아줌 즉, 서브밋의 다른페이지 이동 막아줌
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // 데이터 합쳐서 객체화
+            const formData = {
+                username : username,
+                password : password
+            }
+            // json으로 변경
+            const jsonData = JSON.stringify(formData)
+            // fetch 사용해서 데이터 전송
+            fetch('http://localhost:8080/auth/login', {
+                method: 'POST', //post방법으로 전송(url이 아니라 boby로 전송)
+                headers: {
+                    'Content-Type':'application/json'
+                },
+                body: jsonData
+            })
+            .then(res => res.json()) // 응답이 오면 json받기
+            .then(data => {
+                localStorage.setItem('userInfo',JSON.stringify(data))
+                console.log(data);
+            })
+        })
+    </script>
+</body>
+</html>
